@@ -2,8 +2,6 @@
 #include <time.h>
 #include "SyncQueue.cpp"
 
-using namespace std;
-
 HANDLE start;
 
 struct ForProducer
@@ -28,7 +26,7 @@ DWORD WINAPI producer(LPVOID par)
 
 	for (int i = 0; i < data->count; i++) {
 		data->queue->Insert(data->number + i);
-		cout << data->number + i << "\n";
+		std::cout << data->number + i << "\n";
 		Sleep(70);
 	}
 
@@ -43,7 +41,7 @@ DWORD WINAPI consumer(LPVOID par)
 
 	for (int i = 0; i < data->count; i++) {
 		int number = data->queue->Remove();
-		cout << -1*number << "\n";
+		std::cout << -1 * number << "\n";
 		Sleep(7);
 	}
 
@@ -53,22 +51,22 @@ DWORD WINAPI consumer(LPVOID par)
 int main()
 {
 	int queueSize;
-	cout << "Queue size: ";
-	cin >> queueSize;
+	std::cout << "Queue size: ";
+	std::cin >> queueSize;
 
 	start = CreateEvent(NULL, TRUE, FALSE, NULL);
 
 	SyncQueue* queue = new SyncQueue(queueSize);
 
 	int producerNumber;
-	cout << "Producer number: ";
-	cin >> producerNumber;
+	std::cout << "Producer number: ";
+	std::cin >> producerNumber;
 
 	ForProducer* arrayForProducer = new ForProducer[producerNumber];
 	for (int i = 0; i < producerNumber; i++) {
-		cout << "Number of elements produced by thread " << i + 1 << ": ";
+		std::cout << "Number of elements produced by thread " << i + 1 << ": ";
 		int count;
-		cin >> count;
+		std::cin >> count;
 		arrayForProducer[i].count = count;
 		arrayForProducer[i].number = i + 1;
 		arrayForProducer[i].queue = *&queue;
@@ -82,14 +80,14 @@ int main()
 	}
 
 	int consThreadCount;
-	cout << "Consumer count: ";
-	cin >> consThreadCount;
+	std::cout << "Consumer count: ";
+	std::cin >> consThreadCount;
 
 	ForConsumer* arrayForConsumer = new ForConsumer[consThreadCount];
 	for (int i = 0; i < consThreadCount; i++) {
-		cout << "Number of elements consumed by thread " << i + 1 << ": ";
+		std::cout << "Number of elements consumed by thread " << i + 1 << ": ";
 		int count;
-		cin >> count;
+		std::cin >> count;
 		arrayForConsumer[i].count = count;
 		arrayForConsumer[i].queue = *&queue;
 	}
