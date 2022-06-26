@@ -4,8 +4,6 @@
 
 #pragma warning(disable : 4996)
 
-using namespace std;
-
 char READ = 'r';
 char MODIFY = 'm';
 char ORDER_NOT_FOUND = 'n';
@@ -42,7 +40,7 @@ LPWSTR charArrayToLPWSTR(const char* com) {
 	return command;
 }
 
-LPWSTR stringToLPWSTR(string com) {
+LPWSTR stringToLPWSTR(std::string com) {
 	wchar_t temp[250];
 	size_t outSize;
 	mbstowcs_s(&outSize, temp, com.c_str(), com.length());
@@ -51,7 +49,7 @@ LPWSTR stringToLPWSTR(string com) {
 }
 
 Order* findOrder(int orderNumber) {
-	ifstream in(filename, ios::binary);
+	std::ifstream in(filename, std::ios::binary);
 	while (in.peek() != EOF)
 	{
 		Order* order = new Order;
@@ -68,7 +66,7 @@ Order* findOrder(int orderNumber) {
 }
 
 void modify(Order order) {
-	fstream f(filename, ios::binary | ios::in | ios::out);
+	std::fstream f(filename, std::ios::binary | std::ios::in | std::ios::out);
 	int pos = 0;
 	int orderSize = sizeof(Order);
 	while (f.peek() != EOF)
@@ -76,7 +74,7 @@ void modify(Order order) {
 		Order o;
 		f.read((char*)&o, sizeof(Order));
 		if (order.n == o.n) {
-			f.seekp(pos * orderSize, ios::beg);
+			f.seekp(pos * orderSize, std::ios::beg);
 			f.write((char*)&order, sizeof(Order));
 			f.close();
 			return;
@@ -100,13 +98,13 @@ DWORD WINAPI client(LPVOID data)
 	sa.bInheritHandle = TRUE;
 
 	if (!CreatePipe(&readPipe, &clientWritePipe, &sa, 0)) {
-		cout << "Create pipe failed.\n";
+		std::cout << "Create pipe failed.\n";
 		system("pause");
 		return 0;
 	}
 
 	if (!CreatePipe(&clientReadPipe, &writePipe, &sa, 0)) {
-		cout << "Create pipe failed.\n";
+		std::cout << "Create pipe failed.\n";
 		system("pause");
 		return 0;
 	}
@@ -118,10 +116,10 @@ DWORD WINAPI client(LPVOID data)
 	sprintf(comLine, "C:\\lab5c.exe %d %d", (int)clientWritePipe, (int)clientReadPipe);
 	ZeroMemory(&si, sizeof(STARTUPINFO));
 	si.cb = sizeof(STARTUPINFO);
-	cout << comLine<<endl;
+	std::cout << comLine << std::endl;
 	system("pause");
 	if (!CreateProcess(NULL, stringToLPWSTR(comLine), NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi)) {
-		cout << "The new process is not created.\n";
+		std::cout << "The new process is not created.\n";
 		return 0;
 	}
 	CloseHandle(pi.hProcess);
@@ -186,27 +184,27 @@ DWORD WINAPI client(LPVOID data)
 }
 
 void createBinaryFile() {
-	ofstream out(filename, ios::binary);
+	std::ofstream out(filename, std::ios::binary);
 
-	cout <<endl<< "How many orders you want to write?\n";
+	std::cout << std::endl << "How many orders you want to write?\n";
 	int num;
-	cin >> num;
+	std::cin >> num;
 
 	for (int i = 0; i < num; i++)
 	{
 		system("cls");
 		Order order;
-		cout << "Enter order number:\n";
-		cin >> order.n;
+		std::cout << "Enter order number:\n";
+		std::cin >> order.n;
 
-		cout << "Enter order name:\n";
-		cin >> order.name;
+		std::cout << "Enter order name:\n";
+		std::cin >> order.name;
 
-		cout << "Enter product count:\n";
-		cin >> order.amount;
+		std::cout << "Enter product count:\n";
+		std::cin >> order.amount;
 
-		cout << "Enter product price:\n";
-		cin >> order.price;
+		std::cout << "Enter product price:\n";
+		std::cin >> order.price;
 
 		out.write((char*)&order, sizeof(struct Order));
 	}
@@ -216,14 +214,14 @@ void createBinaryFile() {
 
 void checkDataInBinaryFile()
 {
-	ifstream in(filename, ios::binary);
+	std::ifstream in(filename, std::ios::binary);
 	system("cls");
-	cout << "Orders:\n";
+	std::cout << "Orders:\n";
 	while (in.peek() != EOF)
 	{
 		Order order;
 		in.read((char*)&order, sizeof(Order));
-		cout << "Order number:\n" << order.n << "\nOrder name:\n" << order.name << "\nProduct count:\n" << order.amount << "\nProduct price:\n" << order.price << endl << endl;
+		std::cout << "Order number:\n" << order.n << "\nOrder name:\n" << order.name << "\nProduct count:\n" << order.amount << "\nProduct price:\n" << order.price << std::endl << std::endl;
 	}
 
 	in.close();
@@ -233,16 +231,16 @@ void main(int argc, char* argv[])
 {
 	InitializeCriticalSection(&cs);
 	semaphore = CreateSemaphore(NULL, 1, 1, NULL);
-	cout<<argv[0];
-	cout << "Enter file order name:\n";
-	cin >> filename;
+	std::cout << argv[0];
+	std::cout << "Enter file order name:\n";
+	std::cin >> filename;
 
 	createBinaryFile();
 	checkDataInBinaryFile();
 
-	cout << "Enter client count:\n";
+	std::cout << "Enter client count:\n";
 	int clientCount;
-	cin >> clientCount;
+	std::cin >> clientCount;
 	system("cls");
 	HANDLE* handles = new HANDLE[clientCount];
 	DWORD* ID = new DWORD[clientCount];
