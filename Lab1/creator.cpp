@@ -2,32 +2,31 @@
 #include <fstream>
 #include <iomanip>
 #include <conio.h>
-using namespace std;
 #include "..\..\employee.h"
  
 
 int main(int argc, char* argv[])
 {
  
-    string fileName;
+    std::string fileName;
     int size = atoi(argv[2]);
-    cout << endl << size << endl;
+    std::cout << std::endl << size << std::endl;
     fileName = argv[1];
     
  
-    fstream file_bin;
-    file_bin.open(fileName, ios::out | ios::binary);
-    if (file_bin.is_open()) cout << argv[1] << " is open" << "\n";
-    else  cout << argv[1] << " isn't open" << "\n";
+    std::fstream file_bin;
+    file_bin.open(fileName, std::ios::out | std::ios::binary);
+    if (file_bin.is_open()) std::cout << argv[1] << " is open" << std::endl;
+    else  cout << argv[1] << " isn't open" << std::endl;
 
     for (int i = 0; i < size; ++i) {
         employee emp;
-        cout << "Write num: ";
-        cin >> emp.num;
-        cout << "Write name: ";
-        cin >> emp.name;
-        cout << "Write hours: ";
-        cin >> emp.hours;
+        std::cout << "Write num: ";
+        std::cin >> emp.num;
+        std::cout << "Write name: ";
+        std::cin >> emp.name;
+        std::cout << "Write hours: ";
+        std::cin >> emp.hours;
 
         file_bin.write((char*)&emp, sizeof(emp));
     }
