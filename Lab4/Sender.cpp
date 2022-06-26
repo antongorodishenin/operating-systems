@@ -4,8 +4,6 @@
 
 #pragma warning(disable : 4996)
 
-using namespace std;
-
 HANDLE isFull;
 HANDLE isEmpty;
 HANDLE mutex;
@@ -47,18 +45,18 @@ void write(char* filename, char* message, char* authorName) {
 	WaitForSingleObject(isEmpty, INFINITE);
 	WaitForSingleObject(mutex, INFINITE);
 
-	fstream f(filename, ios::binary | ios::in | ios::out);
+	std::fstream f(filename, std::ios::binary | std::ios::in | std::ios::out);
 
 	int messageWritePos;
 	char p[10];
 	f.read(p, sizeof(p));
 	messageWritePos = atoi(p);
-	cout << "Message write pos: " << messageWritePos << endl;
+	std::cout << "Message write pos: " << messageWritePos << std::endl;
 
 	Message* m = new Message(authorName, message);
 	int pos = sizeof(p) + sizeof(Message) * messageWritePos;
-	f.seekp(pos, ios::beg);
-	cout << (char*)m << endl;
+	f.seekp(pos, std::ios::beg);
+	std::cout << (char*)m << std::endl;
 	f.write((char*)m, sizeof(Message));
 
 	messageWritePos++;
@@ -66,7 +64,7 @@ void write(char* filename, char* message, char* authorName) {
 		messageWritePos = 0;
 	}
 	itoa(messageWritePos, p, 10);
-	f.seekp(0, ios::beg);
+	f.seekp(0, std::ios::beg);
 	f.write(p, sizeof(p));
 
 	f.close();
@@ -81,20 +79,20 @@ int main(int argc, char* argv[]) {
 	mutex = OpenMutex(MUTEX_ALL_ACCESS, FALSE, charArrayToLPCWSTR("Mutex"));
 	char* filename = argv[1];
 	messagesNumber = atoi(argv[2]);
-	cout << "Enter name:\n";
+	std::cout << "Enter name:\n";
 	char name[20];
-	cin >> name;
+	std::cin >> name;
 
 	bool doCycle = true;
 	while (doCycle) {
-		cout << "Enter:\n1) Write\n2) Exit\n";
+		std::cout << "Enter:\n1) Write\n2) Exit\n";
 		int answer;
-		cin >> answer;
+		std::cin >> answer;
 
 		if (answer == 1) {
-			cout << "Enter message:\n";
+			std::cout << "Enter message:\n";
 			char message[20];
-			cin >> message;
+			std::cin >> message;
 			write(filename, message, name);
 		}
 		else if (answer == 2) {
