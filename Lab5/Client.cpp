@@ -2,8 +2,6 @@
 #include <conio.h>
 #include <iostream>
 
-using namespace std;
-
 char READ = 'r';
 char MODIFY = 'm';
 char ORDER_NOT_FOUND = 'n';
@@ -19,7 +17,7 @@ struct Order {
 	double price;
 };
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
 
 	HANDLE writePipe = (HANDLE)atoi(argv[1]);
 	HANDLE readPipe = (HANDLE)atoi(argv[2]);
@@ -27,14 +25,14 @@ int main(int argc, char *argv[]) {
 	while (doCycle) {
 		DWORD bytesWrite;
 		DWORD bytesRead;
-		cout << "1) Read\n2) Modify\n3) Exit\n";
+		std::cout << "1) Read\n2) Modify\n3) Exit\n";
 		int answer;
-		cin >> answer;
+		std::cin >> answer;
 		system("cls");
-		if (answer == 1) {		
+		if (answer == 1) {
 			int orderNumber;
-			cout << "Enter order number:\n";
-			cin >> orderNumber;
+			std::cout << "Enter order number:\n";
+			std::cin >> orderNumber;
 
 			WriteFile(writePipe, &READ, sizeof(READ), &bytesWrite, NULL);
 			WriteFile(writePipe, &orderNumber, sizeof(orderNumber), &bytesWrite, NULL);
@@ -44,20 +42,22 @@ int main(int argc, char *argv[]) {
 			if (serverAnswer == ORDER_FOUND) {
 				Order order;
 				ReadFile(readPipe, &order, sizeof(order), &bytesRead, NULL);
-				cout << "\nOrder name:\n" << order.name << "\nProduct count:\n" << order.amount << "\nProduct price:\n" << order.price << endl;
-			} else {
-				cout << "Order not found.\n";
+				std::cout << "\nOrder name:\n" << order.name << "\nProduct count:\n" << order.amount << "\nProduct price:\n" << order.price << std::endl;
+			}
+			else {
+				std::cout << "Order not found.\n";
 			}
 
 			char c;
-			cout << "Press any char to finish reading: ";
-			cin >> c;
+			std::cout << "Press any char to finish reading: ";
+			std::cin >> c;
 
 			WriteFile(writePipe, &END_OPERATION, sizeof(END_OPERATION), &bytesWrite, NULL);
-		} else if (answer == 2) {
+		}
+		else if (answer == 2) {
 			int orderNumber;
-			cout << "Enter order number:\n";
-			cin >> orderNumber;
+			std::cout << "Enter order number:\n";
+			std::cin >> orderNumber;
 
 			WriteFile(writePipe, &READ, sizeof(READ), &bytesWrite, NULL);
 
@@ -73,36 +73,38 @@ int main(int argc, char *argv[]) {
 
 				WriteFile(writePipe, &END_OPERATION, sizeof(END_OPERATION), &bytesWrite, NULL);
 
-				cout << "\nOrder name:\n" << order.name << "\nProduct count:\n" << order.amount << "\nProduct price:\n" << order.price << endl << endl;
+				std::cout << "\nOrder name:\n" << order.name << "\nProduct count:\n" << order.amount << "\nProduct price:\n" << order.price << std::endl << std::endl;
 
-				cout << "Enter order name:\n";
-				cin >> order.name;
-				
-				cout << "Enter product count:\n";
-				cin >> order.amount;
-				
-				cout << "Enter product price:\n";
-				cin >> order.price;
+				std::cout << "Enter order name:\n";
+				std::cin >> order.name;
+
+				std::cout << "Enter product count:\n";
+				std::cin >> order.amount;
+
+				std::cout << "Enter product price:\n";
+				std::cin >> order.price;
 
 				WriteFile(writePipe, &MODIFY, sizeof(MODIFY), &bytesWrite, NULL);
 
-				WriteFile(writePipe, &order, sizeof(order), &bytesWrite, NULL);		
-			} else {
-				cout << "Order not found.\n";
+				WriteFile(writePipe, &order, sizeof(order), &bytesWrite, NULL);
+			}
+			else {
+				std::cout << "Order not found.\n";
 			}
 
 			char answer;
 			ReadFile(readPipe, &answer, sizeof(answer), &bytesRead, NULL);
 
 			char c;
-			cout << "Press any char to finish modifying: ";
-			cin >> c;
+			std::cout << "Press any char to finish modifying: ";
+			std::cin >> c;
 
 			WriteFile(writePipe, &END_OPERATION, sizeof(END_OPERATION), &bytesWrite, NULL);
-		} else {
+		}
+		else {
 			WriteFile(writePipe, &EXIT, sizeof(EXIT), &bytesWrite, NULL);
 			doCycle = false;
-	    }
+		}
 	}
 
 	CloseHandle(writePipe);
