@@ -5,8 +5,6 @@
 
 #pragma warning(disable : 4996)
 
-using namespace std;
-
 volatile double* polynoms = new double[2];
 
 struct polynom {
@@ -16,7 +14,7 @@ struct polynom {
 	bool is_del;
 
 
-	polynom(int degree, double* coef, double x,int is_del) {
+	polynom(int degree, double* coef, double x, int is_del) {
 		this->degree = degree;
 		this->coef = coef;
 		this->x = x;
@@ -41,8 +39,8 @@ DWORD WINAPI Polynom(LPVOID temp)
 		Sleep(15);
 	}
 	Sleep(num.is_del * 15);
-	if (num.is_del == 0) cout << "Numerator P(x) = " << result << endl;
-	else cout << "Denominator P(x) = " << result << endl;
+	if (num.is_del == 0) std::cout << "Numerator P(x) = " << result << std::endl;
+	else std::cout << "Denominator P(x) = " << result << std::endl;
 	polynoms[num.is_del] = result;
 	return 0;
 }
@@ -52,28 +50,28 @@ int main()
 {
 	setlocale(LC_ALL, "rus");
 	int num_d;
-	cout << "Enter numerator power:\n";
-	cin >> num_d;
+	std::cout << "Enter numerator power:\n";
+	std::cin >> num_d;
 
 	double* num_c = new double[num_d + 1];
-	cout << "Enter numerator coefficients:\n";
+	std::cout << "Enter numerator coefficients:\n";
 	for (int i = 0; i < num_d + 1; i++) {
-		cin >> num_c[i];
+		std::cin >> num_c[i];
 	}
 
 	int den_d;
-	cout << "Enter denominator power:\n";
-	cin >> den_d;
+	std::cout << "Enter denominator power:\n";
+	std::cin >> den_d;
 
 	double* den_c = new double[den_d + 1];
-	cout << "Enter denominator coefficients\n";
+	std::cout << "Enter denominator coefficients\n";
 	for (int i = 0; i < den_d + 1; i++) {
-		cin >> den_c[i];
+		std::cin >> den_c[i];
 	}
 
 	double x;
-	cout << "Enter value x:\n";
-	cin >> x;
+	std::cout << "Enter value x:\n";
+	std::cin >> x;
 
 	HANDLE hThread[2];
 	DWORD IDThread[2];
@@ -84,13 +82,13 @@ int main()
 
 	hThread[0] = CreateThread(NULL, 0, Polynom, (void*)num, 0, &IDThread[0]);
 	if (hThread[0] == NULL) {
-		cout << "Process for numerator calculating did not start";
+		std::cout << "Process for numerator calculating did not start";
 		return GetLastError();
 	}
 
 	hThread[1] = CreateThread(NULL, 0, Polynom, (void*)den, 0, &IDThread[1]);
 	if (hThread[1] == NULL) {
-		cout << "Process for denominator calculating did not start";
+		std::cout << "Process for denominator calculating did not start";
 		return GetLastError();
 	}
 
@@ -103,10 +101,10 @@ int main()
 
 
 	if (polynoms[1] == 0) {
-		cout << "Denominator is 0" << endl;
+		std::cout << "Denominator is 0" << std::endl;
 	}
 	else {
-		cout << "f(x) = " << polynoms[0] / polynoms[1] << endl;
+		std::cout << "f(x) = " << polynoms[0] / polynoms[1] << std::endl;
 	}
 
 	return 0;
