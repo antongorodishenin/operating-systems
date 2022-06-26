@@ -5,8 +5,6 @@
 
 #pragma warning(disable : 4996)
 
-using namespace std;
-
 HANDLE isFull, isEmpty, mutex;
 int messageReadPos = 0;
 int messagesNumber;
@@ -57,7 +55,7 @@ LPCWSTR charArrayToLPCWSTR(const char* com) {
 	return command;
 }
 
-LPWSTR stringToLPWSTR(string com) {
+LPWSTR stringToLPWSTR(std::string com) {
 	wchar_t temp[250];
 	size_t outSize;
 	mbstowcs_s(&outSize, temp, com.c_str(), com.length());
@@ -65,16 +63,16 @@ LPWSTR stringToLPWSTR(string com) {
 	return command;
 }
 
-LPSTR stringToLPSTR(string com) {
+LPSTR stringToLPSTR(std::string com) {
 	char temp[250];
 	strcpy(temp, com.c_str());
 	LPSTR command = temp;
-	cout << temp << endl;
+	std::cout << temp << std::endl;
 	return command;
 }
 
-void createFile(string filename, int messagesNumber) {
-	ofstream fout(filename, ios::binary);
+void createFile(std::string filename, int messagesNumber) {
+	std::ofstream fout(filename, std::ios::binary);
 	int pos = 0;
 	char p[10];
 	itoa(pos, p, 10);
@@ -86,14 +84,14 @@ void createFile(string filename, int messagesNumber) {
 	fout.close();
 }
 
-void read(string filename) {
+void read(std::string filename) {
 	WaitForSingleObject(isFull, INFINITE);
 	WaitForSingleObject(mutex, INFINITE);
-	cout << "Message read pos: " << messageReadPos << endl;
+	std::cout << "Message read pos: " << messageReadPos << std::endl;
 
-	fstream f(filename, ios::binary | ios::in | ios::out);
+	std::fstream f(filename, std::ios::binary | std::ios::in | std::ios::out);
 	if (!f.is_open()) {
-		cout << "error\n";
+		std::cout << "error\n";
 		return;
 	}
 
@@ -101,10 +99,10 @@ void read(string filename) {
 	char writeIter[10];
 	int pos = sizeof(writeIter) + 30 * messageReadPos;
 
-	f.seekg(pos, ios::beg);
+	f.seekg(pos, std::ios::beg);
 	f.read((char*)m, sizeof(Message));
-	cout << "Author: " << m->name << ", text: " << m->text << endl;
-	f.seekp(pos, ios::beg);
+	std::cout << "Author: " << m->name << ", text: " << m->text << std::endl;
+	f.seekp(pos, std::ios::beg);
 	m = new Message("empty", "empty");
 	f.write((char*)m, sizeof(Message));
 
@@ -120,17 +118,17 @@ void read(string filename) {
 }
 
 void main(int argc, char* argv[]) {
-	cout << "Enter file name:\n";
-	string filename;
-	cin >> filename;
+	std::cout << "Enter file name:\n";
+	std::string filename;
+	std::cin >> filename;
 
-	cout << "Enter messages number:\n";
-	cin >> messagesNumber;
+	std::cout << "Enter messages number:\n";
+	std::cin >> messagesNumber;
 	createFile(filename, messagesNumber);
 
-	cout << "Enter Sender process count: \n";
+	std::cout << "Enter Sender process count: \n";
 	int senderProcessCount;
-	cin >> senderProcessCount;
+	std::cin >> senderProcessCount;
 
 	isFull = CreateSemaphore(NULL, 0, messagesNumber, charArrayToLPCWSTR("Full"));
 	isEmpty = CreateSemaphore(NULL, messagesNumber, messagesNumber, charArrayToLPCWSTR("Empty"));
@@ -141,16 +139,16 @@ void main(int argc, char* argv[]) {
 
 	char num[10];
 	itoa(messagesNumber, num, 10);
-	string path = argv[0];
+	std::string path = argv[0];
 	replace(path, "LR_4.exe", "Sender.exe ");
-	string data = path + filename + " " + num;
+	std::string data = path + filename + " " + num;
 
 	for (int i = 0; i < senderProcessCount; i++) {
 		ZeroMemory(&si[i], sizeof(STARTUPINFO));
 		si[i].cb = sizeof(STARTUPINFO);
-		cout << data << endl;
+		std::cout << data << std::endl;
 		if (!CreateProcess(NULL, stringToLPWSTR(data), NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si[i], &pi[i])) {
-			cout << "The new process is not created.\n";
+			std::cout << "The new process is not created.\n";
 			return;
 		}
 	}
@@ -158,9 +156,9 @@ void main(int argc, char* argv[]) {
 	system("cls");
 	bool doCycle = true;
 	while (doCycle) {
-		cout << "Enter:\n1) Read\n2) Exit\n";
+		std::cout << "Enter:\n1) Read\n2) Exit\n";
 		int answer;
-		cin >> answer;
+		std::cin >> answer;
 
 		if (answer == 1) {
 			read(filename);
